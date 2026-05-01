@@ -1,0 +1,4 @@
+.ruff_cache/
+.pyright/
+__pycache__/
+*.pyc
