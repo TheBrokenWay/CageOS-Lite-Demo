@@ -12,6 +12,30 @@ The core idea is simple:
 > Governance should remain outside the model, outside the visible workspace,
 > and inside an independent control layer.
 
+## Genesis
+
+This demo makes more sense if you understand where it came from.
+
+The original pressure was not "build a tutoring demo." The original pressure
+was scientific and pharmaceutical decision support in a high-consequence
+setting. That work led to a hard conclusion:
+
+- better answers were not enough
+- prompting alone was not enough
+- review after the fact was not enough
+
+What was needed was a governed operating path where the model did not control
+its own boundaries.
+
+That realization produced a wider split:
+
+- **PredX** remained the scientific product line
+- **CageOS** became the governance substrate
+- **CageOS Lite** became the smallest public proof that the governance pattern
+  could be demonstrated without exposing the private control plane
+
+This repository exists to show that genesis in public form.
+
 ## What this demonstrates
 
 - Side A / Side B separation
@@ -48,6 +72,18 @@ This demo is designed to support one specific claim:
 In the broader CageOS family, the same design direction is intended to govern
 other LLM and program workflows beyond tutoring.
 
+## What this repository demonstrates about the process
+
+This repository is not just a demo of a result. It is a demo of a design
+decision:
+
+1. start from a high-trust problem
+2. discover that the model cannot be the final governor of that problem
+3. move governance outside the model
+4. expose only the proof surface publicly
+
+That process is the genesis of the CageOS family.
+
 ## What is intentionally not public
 
 This repository does not include:
@@ -75,6 +111,7 @@ README.md                 public demonstration overview
 ## Read this next
 
 - [Public demonstration page](docs/index.md)
+- [Genesis and product-family path](docs/GENESIS.md)
 - [PredX lessons for CageTutor](docs/PREDX_LESSONS_FOR_CAGETUTOR.md)
 
 ## Core design principle

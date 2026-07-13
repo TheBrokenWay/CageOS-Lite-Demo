@@ -11,6 +11,27 @@ CageOS Lite demonstrates that a capable model can be made to operate inside a
 bounded, reviewable surface while the actual governance remains outside the
 model's visible workspace.
 
+## Genesis in one page
+
+The public demo came last, not first.
+
+The work began with a scientific decision-support problem: how to use capable
+systems in high-consequence settings without treating the model as trustworthy
+enough to govern itself. That led to a broader systems conclusion:
+
+- the model should do work
+- the model should not define its own boundary conditions
+- governance has to live in an independent control layer
+
+From that point the project separated into roles:
+
+- **PredX** for the scientific domain objective
+- **CageOS** for the governance substrate
+- **CageOS Lite** for the public proof surface
+
+This page exists to explain that final layer without disclosing the private
+mechanics underneath it.
+
 ## What the demo proves
 
 - the model-facing surface can be separated from the governance plane
@@ -59,6 +80,23 @@ CageOS Lite treats that as a deployment and boundary problem:
 - keep the enforcement surface separate
 - keep the decision authority outside the model
 
+## Why the public material is intentionally incomplete
+
+This public repo is designed to prove the direction of the system, not to teach
+outsiders how the private enforcement path works.
+
+That means the repository is optimized for:
+
+- clarity of the governance thesis
+- visible product genesis
+- safe proof of the control pattern
+
+It is not optimized for:
+
+- full implementation disclosure
+- operational reproduction of private controls
+- release of trade-secret governance mechanics
+
 ## Public scope
 
 This repo intentionally keeps the public scope small:
@@ -87,4 +125,5 @@ enforcement plane works.
 ## Read next
 
 - [Repository README](../README.md)
+- [Genesis and product-family path](GENESIS.md)
 - [PredX lessons for CageTutor](PREDX_LESSONS_FOR_CAGETUTOR.md)
