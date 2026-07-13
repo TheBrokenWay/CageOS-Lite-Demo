@@ -112,6 +112,7 @@ README.md                 public demonstration overview
 
 - [Public demonstration page](docs/index.md)
 - [Genesis and product-family path](docs/GENESIS.md)
+- [Social assets](docs/SOCIAL_ASSETS.md)
 - [PredX lessons for CageTutor](docs/PREDX_LESSONS_FOR_CAGETUTOR.md)
 
 ## Core design principle
