@@ -1,0 +1,77 @@
+{
+  "_read_me_first": "This is a stranger-fillable comparison, not a claim. Every gate below names an exact command you can run yourself against gates.sh in this release. Fill in your own competitor's row by running that command against your own system's equivalent enforcement point, or state plainly that no equivalent exists. A null result is an honest answer, not a loss for you or a win for us -- see the methodology rules below before filling anything in.",
+  "methodology": {
+    "how_to_fill_this_in": "For each gate: (1) construct the identical attack -- release substitution, forged manifest, self-consistent forged evidence, replay, false success, false refusal -- against YOUR system's real enforcement boundary, not a mock; (2) record PASS only if your system rejects it by observing REALITY (filesystem, external state), not merely by re-checking its own internal receipt; (3) record your exact command and raw output alongside the verdict, the same discipline this template holds itself to.",
+    "rules": [
+      "Same workload semantics -- an attack against a claim, never against a strawman",
+      "Native configuration only -- no vendor-specific bypass or debug mode",
+      "Failures recorded as failures -- a gate your system cannot pass is recorded, not omitted",
+      "Deterministic, reproducible -- your reviewer can re-run your row and get your row's result",
+      "A null 'results' field means untested, never 'presumed passing' or 'presumed failing'"
+    ],
+    "reference_run": "gates.sh <release-dir> against this exact CageOS Lite v0.1.0 release. Full command and expected output for every gate are in gates.sh itself, in this repository, byte-identical to what a reviewer runs.",
+    "our_own_result": "58/58 checks, 8/8 gates, independently re-verified on a second machine from the extracted package -- see docs/RELEASE-v0.1.0.md and LIMITS.md in this repository for the exact scope and what this does NOT establish."
+  },
+  "gates": [
+    {
+      "id": 1,
+      "name": "release substitution is refused",
+      "attack": "flip one byte in the shipped engine binary, then attempt to run it",
+      "must": "REJECTED -- exit 1, before any effect"
+    },
+    {
+      "id": 2,
+      "name": "forged manifest is refused (signature fails)",
+      "attack": "edit the release manifest's declared version without the release signing key",
+      "must": "REJECTED -- signature verification fails"
+    },
+    {
+      "id": 3,
+      "name": "self-consistent forged evidence is rejected by reality",
+      "attack": "engine emits a bundle whose digests, schema, challenge binding, and decision key are ALL internally correct, claiming a durable effect it never performed",
+      "must": "REJECTED -- and specifically on the EXTERNAL postcondition (claim vs. observed filesystem reality), not on the bundle's own internal consistency. This is the gate that most directly tests 'proves custody, not truth': can your system be fooled by evidence that is honest about itself but false about the world?"
+    },
+    {
+      "id": 4,
+      "name": "replayed transcript is refused",
+      "attack": "an old genuine, correctly-signed transcript presented against a NEW challenge",
+      "must": "REJECTED -- nonce/challenge binding catches reuse even though the signature is real"
+    },
+    {
+      "id": 5,
+      "name": "false success is contradicted by the filesystem",
+      "attack": "engine claims an action succeeded; the filesystem shows it did not",
+      "must": "REJECTED -- claim vs. observed reality mismatch caught"
+    },
+    {
+      "id": 6,
+      "name": "false refusal is contradicted by the filesystem",
+      "attack": "engine claims an action was refused; the filesystem shows it happened anyway",
+      "must": "REJECTED -- same claim-vs-reality check, opposite direction. A gate that only catches false SUCCESS and not false REFUSAL is asymmetric and incomplete"
+    },
+    {
+      "id": 7,
+      "name": "legitimate idempotency passes",
+      "attack": "not an attack -- re-present a genuine already-completed decision",
+      "must": "PASS -- recovers the durable decision rather than re-executing or refusing. A gate that blocks everything is not security, it is breakage"
+    },
+    {
+      "id": 8,
+      "name": "clean run from a fresh directory passes",
+      "attack": "not an attack -- ordinary first-time legitimate use",
+      "must": "PASS -- exit 0. Paired with gates 1-6 by design: six gates that must fail, two that must pass, so no gate can trivially satisfy its requirement by rejecting everything"
+    }
+  ],
+  "engines": {
+    "cageos-lite": {
+      "source": "https://github.com/TheBrokenWay/CageOS-Lite-Demo",
+      "release": "v0.1.0",
+      "results": "8/8 -- see gates.sh in this repository; run it yourself, do not trust this field"
+    },
+    "your-system-here": {
+      "source": null,
+      "results": null,
+      "note": "Copy this block, name your own system, run the six attacks and two legitimate cases above against your own enforcement boundary, and fill in your own row. We will not fill this in for you -- that is the whole point of gate 3."
+    }
+  }
+}
