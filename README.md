@@ -1,135 +1,143 @@
-# CageOS Lite Demo
+# CageOS Lite
 
-Public demonstration of the CageOS Lite control pattern.
+**Don't trust this software. Attack it, then check its work.**
 
-This repository is intentionally small. It is meant to show the public-facing
-surface of a governed system without exposing the hidden enforcement plane that
-actually controls behavior.
+CageOS Lite is a small, signed, independently runnable proof of the CageOS
+control pattern. A closed engine runs a real, fixture-only CageOS lifecycle on
+your machine. A verifier — every line of which is in this repository — decides
+for itself whether what the engine *claimed* is what actually *happened*.
 
-The core idea is simple:
+The claim it exists to demonstrate:
 
-> capable models and tools should not be trusted as their own governors.
-> Governance should remain outside the model, outside the visible workspace,
-> and inside an independent control layer.
+> **A completely self-consistent forged CageOS evidence bundle still fails when
+> independently observed reality contradicts it. The record is not privileged.**
 
-## Genesis
+That is gate 3 below, and you can run it yourself.
 
-This demo makes more sense if you understand where it came from.
+---
 
-The original pressure was not "build a tutoring demo." The original pressure
-was scientific and pharmaceutical decision support in a high-consequence
-setting. That work led to a hard conclusion:
+## Run it
 
-- better answers were not enough
-- prompting alone was not enough
-- review after the fact was not enough
+**1. Download the release**
 
-What was needed was a governed operating path where the model did not control
-its own boundaries.
+Get `cageos-lite-0.1.0.tgz` from
+[Releases](https://github.com/TheBrokenWay/CageOS-Lite-Demo/releases), and
+confirm you have the exact bytes we published:
 
-That realization produced a wider split:
-
-- **PredX** remained the scientific product line
-- **CageOS** became the governance substrate
-- **CageOS Lite** became the smallest public proof that the governance pattern
-  could be demonstrated without exposing the private control plane
-
-This repository exists to show that genesis in public form.
-
-## What this demonstrates
-
-- Side A / Side B separation
-- a tutor-visible contract surface
-- bounded, governed agent behavior
-- the principle that LLMs should not decide pass/block outcomes
-- the principle that enforcement internals should be unseen by the system being
-  governed
-- a modular public proof point for the broader CageOS product family
-
-## Why this matters
-
-Most AI systems rely on one of two weak patterns:
-
-1. prompt-only restraint
-2. advisory review after the fact
-
-CageOS Lite demonstrates a different pattern:
-
-- the governed system sees only the visible work surface
-- the enforcement plane is separate
-- decisions can be routed, blocked, escalated, or constrained without giving
-  the model direct access to the control internals
-
-This treats governance as an operating-path problem, not a wording problem.
-
-## Public proof claim
-
-This demo is designed to support one specific claim:
-
-> governance can remain outside the model while still shaping what the model is
-> allowed to do.
-
-In the broader CageOS family, the same design direction is intended to govern
-other LLM and program workflows beyond tutoring.
-
-## What this repository demonstrates about the process
-
-This repository is not just a demo of a result. It is a demo of a design
-decision:
-
-1. start from a high-trust problem
-2. discover that the model cannot be the final governor of that problem
-3. move governance outside the model
-4. expose only the proof surface publicly
-
-That process is the genesis of the CageOS family.
-
-## What is intentionally not public
-
-This repository does not include:
-
-- production gate source
-- hidden red-team fixtures
-- replay verification internals
-- private school/course data
-- PredX or full CageOS internals
-- operational sealing scripts
-- real bypass/evasion catalogs
-- trade-secret enforcement details
-
-That omission is deliberate. The public value is the control pattern and proof
-surface, not the internal method disclosure.
-
-## Repository layout
-
-```text
-src/cagetutor/agent/      tutor-visible contract surface
-docs/                     public explanatory notes
-README.md                 public demonstration overview
+```bash
+sha256sum cageos-lite-0.1.0.tgz
+# 7a671ed54ec3337e1b65a02c9c46ec5cb2c67225931fae1d3a6e7407f256a1d9
+tar xzf cageos-lite-0.1.0.tgz && cd cageos-lite-0.1.0-rc
 ```
 
-## Read this next
+**2. Verify the publisher signature**
 
-- [Public demonstration page](docs/index.md)
-- [Genesis and product-family path](docs/GENESIS.md)
-- [Social assets](docs/SOCIAL_ASSETS.md)
-- [PredX lessons for CageTutor](docs/PREDX_LESSONS_FOR_CAGETUTOR.md)
+```bash
+python3 run_demo.py .
+```
 
-## Core design principle
+The first thing it does is check that Tillar Technologies signed this release,
+against a full fingerprint pinned in the source you are reading. Without `gpg`
+or `gpgv` it **refuses to run the engine** rather than falling back.
 
-The tutor agent should see rendered task instructions and rendered gate
-verdicts. It should not see the enforcement implementation. A capable LLM will
-try to inspect, infer, or route around rules if the rules are visible in its
-workspace. CageOS Lite treats that as a deployment-boundary problem, not a
-prompting problem.
+**3. Run the demo** — the same command continues into a real CageOS run,
+against a random challenge it chooses itself.
 
-## Product-family context
+**4. Inspect who / what / where / when / why**
 
-CageOS Lite is the public demonstration edge of a wider governed-systems family:
+Every decision prints a reconstructable record, not an opaque score and not a
+model's judgment:
 
-- CageOS for bounded operational governance
-- CageOS Lite for governed tutoring and guided learning workflows
-- PredX as a governed scientific decisioning product line
+```
+WHO     proposer / issuer / executor / observer / subject
+WHAT    the requested action and its payload digest
+WHERE   the target and scope it applies to
+WHEN    validity window, judged by the engine's clock, not the request's
+WHY     the decision, and the published reason code when refused
+```
 
-This repository only proves the CageOS Lite public pattern. It is not intended
-to expose the full internal product stack.
+**5. Attack it**
+
+```bash
+./gates.sh .
+```
+
+Eight gates: six attacks that must be **rejected**, two legitimate runs that
+must **pass**. You can also trigger the lies directly:
+
+```bash
+python3 run_demo.py . --inject=false-success   # claims success, does nothing
+python3 run_demo.py . --inject=false-refusal   # claims refusal, acts anyway
+```
+
+Both are caught by the filesystem, not by the record.
+
+Requirements: Linux x86_64, Python 3.6+, and `gpg` or `gpgv`. No Python
+packages, no network, no install, no root.
+
+---
+
+## The eight gates
+
+| # | Gate | Establishes |
+|---|---|---|
+| 1 | Release substitution | One flipped byte and the driver refuses **before execution** |
+| 2 | Manifest forgery | Recomputed hashes without our key fail the signature |
+| 3 | **Evidence forgery** | An **internally flawless** bundle still loses to observed reality |
+| 4 | Replay | An old genuine transcript cannot answer a fresh challenge |
+| 5 | False success | A claimed effect that did not happen is contradicted by the filesystem |
+| 6 | False refusal | A claimed refusal that did happen is contradicted by pre/post state |
+| 7 | Idempotency | A re-presented authorization returns the same decision key |
+| 8 | Clean run | Everything passes from a fresh directory |
+
+In the gate 3 run, the forged bundle is internally perfect: every digest
+matches, the challenge binding is correct, the schema conforms, the decision
+key is present. It fails anyway, on checks that observe reality rather than
+the bundle.
+
+## Two different trust questions
+
+```
+  "Did Tillar Technologies release these bytes?"   -> GPG, pinned fingerprint
+  "Is CageOS telling the truth about what happened?"  -> the verifier, no deps
+```
+
+They are deliberately separate. A release signature proves *which software you
+have*. Independent observation proves *whether the effect matched the claim*.
+Neither proves production readiness. See **[LIMITS.md](LIMITS.md)**, which
+states the boundaries in plain English.
+
+## Verify the publisher two ways
+
+The signer fingerprint is published independently here and on our website. If
+the two disagree, stop.
+
+```
+CD62DA5B 5F9F3E69 4C1D5536 A182E6E1 45D573FB
+```
+
+- this repository: [`FINGERPRINT`](FINGERPRINT), [`tillar-release-key.asc`](tillar-release-key.asc)
+- https://tillartechnologies.com
+
+## What is here, and what is not
+
+**Here:** the verifier and gate runner you are asked to read (`run_demo.py`,
+`gates.sh`), the limits, the public key, and the release documentation. The
+copies in this repository are byte-identical to the signed release, so you can
+diff them against the manifest.
+
+**Not here:** the enforcement implementation. The signed static engine and
+daemon are the public executable proof surface; their source remains private.
+That is the point — a locked door is demonstrated by attacking it, not by
+handing over the lock.
+
+## Scope
+
+**v0.1.0: Linux x86_64, static musl.** ARM64 is not included in this release.
+Fixture-only throughout: not an ATO, not a cATO, not a certification, not an
+agency approval, and not a proof about arbitrary production integrations.
+
+Background on where this came from: [docs/GENESIS.md](docs/GENESIS.md).
+Release detail: [docs/RELEASE-v0.1.0.md](docs/RELEASE-v0.1.0.md).
+
+Tillar Technologies LLC · Florida
