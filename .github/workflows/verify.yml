@@ -17,4 +17,4 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run quickstart
-        run: ./quickstart.sh
+        run: bash ./quickstart.sh
