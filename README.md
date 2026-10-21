@@ -16,6 +16,16 @@ That is gate 3 below, and you can run it yourself.
 
 ---
 
+## Run it in one command
+
+```bash
+git clone https://github.com/TheBrokenWay/CageOS-Lite-Demo && cd CageOS-Lite-Demo && ./quickstart.sh
+```
+
+`run_demo.py` and `gates.sh` are the exact files shipped inside the signed release and need the release package, so do not run them from a git clone. `quickstart.sh` downloads the release, checks its SHA-256, and runs the demo and the eight gates for you. The network is used only for the download.
+
+---
+
 ## Run it
 
 **1. Download the release**
