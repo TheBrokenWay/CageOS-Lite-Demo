@@ -7,7 +7,7 @@
 # Environment overrides (all optional):
 #   CAGEOS_LITE_TGZ   Path to a local tarball (skips download; for offline tests)
 #   CAGEOS_LITE_HOME  Work directory (default: $PWD/cageos-lite-release)
-#   CAGEOS_LITE_URL   Download URL (default: the v0.1.0 release asset)
+#   CAGEOS_LITE_URL   Download URL (default: the v0.1.1 release asset)
 #
 # Exit codes:
 #   0    success (prints "QUICKSTART OK" as the very last line)
@@ -21,9 +21,9 @@
 set -euo pipefail
 
 # ---- pinned constants -------------------------------------------------------
-readonly EXPECTED_SHA256="7a671ed54ec3337e1b65a02c9c46ec5cb2c67225931fae1d3a6e7407f256a1d9"
-readonly DEFAULT_URL="https://github.com/TheBrokenWay/CageOS-Lite-Demo/releases/download/v0.1.0/cageos-lite-0.1.0.tgz"
-readonly EXTRACTED_DIRNAME="cageos-lite-0.1.0-rc"
+readonly EXPECTED_SHA256="45f06ca0ca025676a3971eacd77de424009411e6b4d056a1f1e2b55f38b67790"
+readonly DEFAULT_URL="https://github.com/TheBrokenWay/CageOS-Lite-Demo/releases/download/v0.1.1/cageos-lite-0.1.1.tgz"
+readonly EXTRACTED_DIRNAME="cageos-lite-0.1.1"
 
 # ---- resolve script location and work directory -----------------------------
 # We want to work relative to a stable directory, not the caller's cwd.
@@ -41,9 +41,9 @@ missing=()
 command -v python3 >/dev/null 2>&1 || missing+=("python3 (install python3)")
 command -v tar >/dev/null 2>&1 || missing+=("tar (install tar)")
 
-# gpg or gpgv
-if ! command -v gpg >/dev/null 2>&1 && ! command -v gpgv >/dev/null 2>&1; then
-    missing+=("gpg or gpgv (install gnupg or gpgv)")
+# gpg itself (v0.1.1: gates.sh gate 4 mints a throwaway key, which gpgv cannot do)
+if ! command -v gpg >/dev/null 2>&1; then
+    missing+=("gpg (install gnupg; gpgv alone is not enough for gates.sh)")
 fi
 
 # curl or wget
@@ -78,7 +78,7 @@ compute_sha256() {
 echo "The network is used only to download the release. The CageOS engine itself never uses the network."
 
 # ---- download or use local tarball -----------------------------------------
-TARBALL="${WORK_DIR}/cageos-lite-0.1.0.tgz"
+TARBALL="${WORK_DIR}/cageos-lite-0.1.1.tgz"
 
 if [[ -n "${TGZ_PATH}" ]]; then
     # Use provided local tarball

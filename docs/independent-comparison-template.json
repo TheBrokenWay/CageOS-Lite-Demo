@@ -9,8 +9,8 @@
       "Deterministic, reproducible -- your reviewer can re-run your row and get your row's result",
       "A null 'results' field means untested, never 'presumed passing' or 'presumed failing'"
     ],
-    "reference_run": "gates.sh <release-dir> against this exact CageOS Lite v0.1.0 release. Full command and expected output for every gate are in gates.sh itself, in this repository, byte-identical to what a reviewer runs.",
-    "our_own_result": "58/58 checks, 8/8 gates, independently re-verified on a second machine from the extracted package -- see docs/RELEASE-v0.1.0.md and LIMITS.md in this repository for the exact scope and what this does NOT establish."
+    "reference_run": "gates.sh <release-dir> against this exact CageOS Lite v0.1.1 release. Full command and expected output for every gate are in gates.sh itself, in this repository, byte-identical to what a reviewer runs.",
+    "our_own_result": "58/58 checks, 8/8 gates on the build machine for v0.1.1; the second-machine validation done for v0.1.0 has NOT been repeated for v0.1.1 -- see docs/RELEASE-v0.1.1.md, docs/RELEASE-v0.1.0.md and LIMITS.md in this repository for the exact scope and what this does NOT establish."
   },
   "gates": [
     {
@@ -65,7 +65,7 @@
   "engines": {
     "cageos-lite": {
       "source": "https://github.com/TheBrokenWay/CageOS-Lite-Demo",
-      "release": "v0.1.0",
+      "release": "v0.1.1",
       "results": "8/8 -- see gates.sh in this repository; run it yourself, do not trust this field"
     },
     "your-system-here": {

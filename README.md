@@ -30,14 +30,14 @@ git clone https://github.com/TheBrokenWay/CageOS-Lite-Demo && cd CageOS-Lite-Dem
 
 **1. Download the release**
 
-Get `cageos-lite-0.1.0.tgz` from
+Get `cageos-lite-0.1.1.tgz` from
 [Releases](https://github.com/TheBrokenWay/CageOS-Lite-Demo/releases), and
 confirm you have the exact bytes we published:
 
 ```bash
-sha256sum cageos-lite-0.1.0.tgz
-# 7a671ed54ec3337e1b65a02c9c46ec5cb2c67225931fae1d3a6e7407f256a1d9
-tar xzf cageos-lite-0.1.0.tgz && cd cageos-lite-0.1.0-rc
+sha256sum cageos-lite-0.1.1.tgz
+# 45f06ca0ca025676a3971eacd77de424009411e6b4d056a1f1e2b55f38b67790
+tar xzf cageos-lite-0.1.1.tgz && cd cageos-lite-0.1.1
 ```
 
 **2. Verify the publisher signature**
@@ -73,7 +73,8 @@ WHY     the decision, and the published reason code when refused
 ```
 
 Eight gates: six attacks that must be **rejected**, two legitimate runs that
-must **pass**. You can also trigger the lies directly:
+must **pass**. Since v0.1.1 each attack gate also checks *why* it was rejected.
+You can also trigger the lies directly:
 
 ```bash
 python3 run_demo.py . --inject=false-success   # claims success, does nothing
@@ -82,7 +83,8 @@ python3 run_demo.py . --inject=false-refusal   # claims refusal, acts anyway
 
 Both are caught by the filesystem, not by the record.
 
-Requirements: Linux x86_64, Python 3.6+, and `gpg` or `gpgv`. No Python
+Requirements: Linux x86_64, Python 3.6+, and `gpg` or `gpgv` for `run_demo.py`;
+`gates.sh` needs the full `gpg` command (gate 4 mints a throwaway key). No Python
 packages, no network, no install, no root.
 
 ---
@@ -143,11 +145,11 @@ handing over the lock.
 
 ## Scope
 
-**v0.1.0: Linux x86_64, static musl.** ARM64 is not included in this release.
+**v0.1.1: Linux x86_64, static musl.** ARM64 is not included in this release.
 Fixture-only throughout: not an ATO, not a cATO, not a certification, not an
 agency approval, and not a proof about arbitrary production integrations.
 
 Background on where this came from: [docs/GENESIS.md](docs/GENESIS.md).
-Release detail: [docs/RELEASE-v0.1.0.md](docs/RELEASE-v0.1.0.md).
+Release detail: [docs/RELEASE-v0.1.1.md](docs/RELEASE-v0.1.1.md) (current), [docs/RELEASE-v0.1.0.md](docs/RELEASE-v0.1.0.md).
 
 Tillar Technologies LLC · Florida
