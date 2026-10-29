@@ -42,8 +42,12 @@ claim. Neither proves that arbitrary future host state or production
 integrations are trustworthy, and neither is offered as proving that.
 
 Requires: python3 (3.6+), and gpg or gpgv. No Python packages. No network.
+The engine binary is Linux x86_64. From a git clone, run ./quickstart.sh.
+The signed release is not in the clone, and this program exits before
+pretending otherwise.
 
 Usage:
+    ./quickstart.sh
     python3 run_demo.py <release-dir> [--keep]
 """
 
@@ -119,13 +123,47 @@ def parse_manifest(text):
     return fields
 
 
+def explain_not_a_release(release):
+    """The git clone has no signed engine. Stop before the checklist."""
+    print("CageOS Lite — public driver and verifier")
+    print("=" * 66)
+    print()
+    print("This directory is not a signed CageOS Lite release, so there is")
+    print("nothing to verify yet.")
+    print()
+    print(f"  {release}")
+    print()
+    print("run_demo.py checks RELEASE.manifest, the engine, and the daemon.")
+    print("Those files ship in the release tarball. They are not in the git clone.")
+    print()
+    print("If that path was meant to be a release directory, it does not contain")
+    print("RELEASE.manifest. From the repository root, the way to fetch the")
+    print("signed package is:")
+    print()
+    print("    ./quickstart.sh")
+    print()
+    print("That downloads the signed release, checks its SHA-256, and runs this")
+    print("verifier against the extracted directory:")
+    print()
+    print("    cageos-lite-release/cageos-lite-0.1.1")
+    print()
+    print("After that, this is the command that works there:")
+    print()
+    print("    python3 run_demo.py .")
+    return 1
+
+
 def main():
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     keep = "--keep" in sys.argv
     if len(args) != 1:
         print("usage: python3 run_demo.py <release-dir> [--keep]", file=sys.stderr)
+        print("From a git clone, run ./quickstart.sh. The signed release is not in the clone.",
+              file=sys.stderr)
         return 2
     release = os.path.abspath(args[0])
+    if not os.path.isfile(os.path.join(release, "RELEASE.manifest")):
+        return explain_not_a_release(release)
 
     print("CageOS Lite — public driver and verifier")
     print("=" * 66)
@@ -452,18 +490,27 @@ def main():
         return 1
     print(f"ALL {len(results)} CHECKS PASS")
     print()
+    # Closing paragraph corrected after the signed v0.1.1 bytes. That artifact
+    # still says an authorized write cannot be witnessed because a bounded
+    # capability disposes of the artifact. Section H has already observed the
+    # retained write on this host. The signed copy changes on the next release.
     print("What this establishes: the engine you just ran is the exact software")
-    print("Tillar signed; it answered a challenge this program chose; its")
-    print("refusals named published reason codes and left nothing behind on")
-    print("disk, checked by reading the disk; the executor and the observer were")
-    print("distinct identities; and a re-presented authorization did not mint a")
-    print("second decision.")
+    print("Tillar signed, and it answered a challenge this program chose. This")
+    print("program then read the filesystem itself, on this host. An authorized")
+    print("persistent write was observed: the target file exists, the challenge")
+    print("is in its content, and the digest matches. A refused persistent target")
+    print("was byte-for-byte unchanged. Refusals named published reason codes.")
+    print("The executor and the observer were distinct identities, and a")
+    print("re-presented authorization did not mint a second decision.")
     print()
-    print("What it does NOT establish: production readiness, ATO, cATO,")
-    print("certification, agency approval, or security in general. See LIMITS.md")
-    print("for the one gap that matters most - this demo cannot yet independently")
-    print("witness an AUTHORIZED write, because its bounded capability disposes")
-    print("of the artifact by design.")
+    print("What it does not establish: a witness on a separate machine. This")
+    print("program and the files it reads share one host, so a hostile")
+    print("administrator can roll the local state and the local witness back")
+    print("together. No independently operated off-host witness is accepted yet.")
+    print("Post-reboot persistence is unmeasured. Production readiness, ATO,")
+    print("cATO, certification, and agency approval are outside this release.")
+    print("No language model is loaded, called, or supervised. The scenarios are")
+    print("fixtures shipped with the release. See LIMITS.md.")
     return 0
 
 

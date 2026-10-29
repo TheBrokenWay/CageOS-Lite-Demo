@@ -2,7 +2,8 @@
 # quickstart.sh — one-command clone-and-run for CageOS-Lite-Demo
 # This script downloads the signed release package, verifies its SHA-256,
 # extracts it, runs the demo verifier (run_demo.py), then runs the eight
-# gates (gates.sh). It uses only tools found on a normal Linux box.
+# gates (gates.sh). It runs only on Linux x86_64 and uses only tools found
+# on a normal Linux box. Other platforms exit before any download.
 #
 # Environment overrides (all optional):
 #   CAGEOS_LITE_TGZ   Path to a local tarball (skips download; for offline tests)
@@ -11,7 +12,7 @@
 #
 # Exit codes:
 #   0    success (prints "QUICKSTART OK" as the very last line)
-#   1    SHA-256 mismatch, demo failure, or gates failure
+#   1    unsupported platform, SHA-256 mismatch, demo failure, or gates failure
 #   127  missing prerequisite tool
 #
 # The script is careful: it never runs the engine on unverified bytes,
@@ -24,6 +25,23 @@ set -euo pipefail
 readonly EXPECTED_SHA256="45f06ca0ca025676a3971eacd77de424009411e6b4d056a1f1e2b55f38b67790"
 readonly DEFAULT_URL="https://github.com/TheBrokenWay/CageOS-Lite-Demo/releases/download/v0.1.1/cageos-lite-0.1.1.tgz"
 readonly EXTRACTED_DIRNAME="cageos-lite-0.1.1"
+
+# ---- platform ---------------------------------------------------------------
+# The signed engine and daemon are x86_64-unknown-linux-musl. Say so before
+# any download. uname -m reports x86_64 on the machines this release supports.
+OS_NAME="$(uname -s)"
+ARCH_NAME="$(uname -m)"
+if [[ "${OS_NAME}" != "Linux" || "${ARCH_NAME}" != "x86_64" ]]; then
+    cat >&2 <<EOF
+CageOS Lite runs only on Linux x86_64.
+This machine reports: ${OS_NAME} ${ARCH_NAME}
+
+The signed engine and daemon are static musl binaries built for
+x86_64-unknown-linux-musl. macOS, Windows, and other architectures
+(including aarch64 and arm64) are outside this release.
+EOF
+    exit 1
+fi
 
 # ---- resolve script location and work directory -----------------------------
 # We want to work relative to a stable directory, not the caller's cwd.
@@ -138,20 +156,23 @@ fi
 echo "All eight gates passed."
 
 # ---- summary ----------------------------------------------------------------
-# Wording style mirrors LIMITS.md: no production readiness, certification, or ATO claims.
+# Agrees with LIMITS.md. The signed v0.1.1 driver still prints an older
+# closing paragraph; this summary is the statement to keep.
 cat <<'EOF'
 
-What was established:
+What this run verified, on this machine:
 - The release tarball matches the published SHA-256.
-- The GPG signature on the release manifest verifies against the pinned fingerprint.
-- The engine ran a real CageOS lifecycle against a random challenge.
-- The verifier independently observed the effect and confirmed the record.
-- All eight gates behaved as required: six attacks were rejected, two legitimate runs passed.
+- The GPG signature on the release manifest matches the pinned Tillar Technologies fingerprint.
+- The engine ran the fixture scenarios shipped with the release, against a challenge the verifier chose. No language model was loaded or called.
+- The verifier read the filesystem itself. An authorized persistent write was observed: the target file existed, the challenge was in its content, and the digest matched. A refused persistent target was byte-for-byte unchanged.
+- All eight gates behaved as required: six attacks were rejected, two legitimate runs passed. A clean run is 58 of 58 checks.
 
-What was NOT established:
-- Production readiness, certification, or an ATO/cATO.
-- Security of arbitrary integrations or configurations.
-- Anything beyond the fixture-only scope documented in LIMITS.md.
+What this run did not verify:
+- A witness on a separate machine. The verifier and the files it reads share this host, so a hostile administrator can roll the local state and the local witness back together. No independently operated off-host witness is accepted yet. Post-reboot persistence is unmeasured.
+- Production readiness, an ATO or cATO, certification, or agency approval.
+- Supervision of a live agent. The scenarios are fixtures. False-success and false-refusal injections are separate commands (python3 run_demo.py . --inject=false-success and --inject=false-refusal) and are caught by the same filesystem reads.
+
+The signed v0.1.1 driver still ends by saying it cannot yet independently witness an AUTHORIZED write, because a bounded capability disposes of the artifact. That sentence describes the disposable scratch scenarios, whose cleanup guard removes the file on purpose. Section H of the same run is the persistent-write observation, and it passed. The repository LIMITS.md states the same boundary. The copy of the driver inside the signed tarball changes on the next signed release.
 
 QUICKSTART OK
 EOF
