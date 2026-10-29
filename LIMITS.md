@@ -42,9 +42,37 @@ production integrations. It is fixture-only throughout.
 Authentic software, authentic evidence, and independently observed reality are
 three different things. Keeping them apart is the point.
 
+## What this release verifies, and where the witness sits
+
+The verifier and the files it reads are on the same machine. After the engine
+exits, the verifier opens those files itself. A passing run of the fixture
+scenarios shipped in this release has checked all of the following:
+
+- **An authorized persistent write was observed on this host.** The
+  retained-write scenario leaves a file in place. The verifier checks that the
+  file exists, that the challenge the verifier chose is in its content, and
+  that the digest matches. That observation is section H of the driver. It is
+  an independent observation of an authorized write.
+- **A refused persistent target was unchanged.** The verifier seeded that
+  directory before the engine ran. After a refusal the directory is
+  byte-for-byte the same.
+- **Disposable scratch scenarios are a different measurement.** Their cleanup
+  guard removes the artifact by design, so an empty directory is not evidence
+  of refusal and not evidence of a durable write. The "left nothing behind"
+  check is applied only where it is meaningful.
+- **A lie about that write fails.** A false success claims an effect the
+  filesystem does not have. A false refusal claims refusal after an effect
+  occurred. Both fail, because the verifier sides with the filesystem.
+- **A tampered release is refused before the engine runs.** One flipped byte
+  in the signed manifest, the engine, or the daemon stops execution.
+
+A passing run does not place a witness on a separate machine. The scenarios
+are fixtures. No language model is loaded, called, or supervised, and a
+passing run is not a production agent integration.
+
 ## What the guarantee does not cover
 
-The guarantee ends at the host. A hostile administrator can act outside the
+The checks above end at the host. A hostile administrator can act outside the
 CageOS path. Local state and a local witness configuration can be rolled back
 together. No independently operated off-host witness is accepted yet.
 Post-reboot persistence is unmeasured. Production emission remains locked.
@@ -85,11 +113,11 @@ directory. The verifier is told this explicitly rather than left to infer a
 distinction the filesystem cannot support, and it applies the "left nothing
 behind" check only where it is meaningful.
 
-The two **persistent** scenarios exist precisely to close that gap. They use a
-separate authority type, `RetainedWriteCapability`, whose durability is a
-property of the type rather than a flag: the disposable capability owns a
-cleanup guard and the retained one does not. Nothing about the existing
-containment guarantee was weakened to make the demo work.
+The two **persistent** scenarios exist precisely to close that measurement
+gap. They use a separate authority type, `RetainedWriteCapability`, whose
+durability is a property of the type rather than a flag: the disposable
+capability owns a cleanup guard and the retained one does not. Nothing about
+the existing containment guarantee was weakened to make the demo work.
 
 ## Failures found during development, preserved on purpose
 

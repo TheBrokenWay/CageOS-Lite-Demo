@@ -19,7 +19,32 @@
 set -uo pipefail
 
 RELEASE="${1:?usage: gates.sh <release-dir>}"
-RELEASE="$(cd "$RELEASE" && pwd)"
+if [ -d "$RELEASE" ]; then
+  RELEASE="$(cd "$RELEASE" && pwd)"
+fi
+if [ ! -f "$RELEASE/RELEASE.manifest" ]; then
+  cat >&2 <<EOF
+This directory is not a signed CageOS Lite release, so there is nothing to attack yet.
+
+  ${RELEASE}
+
+gates.sh runs its eight gates against the engine, the daemon, and
+RELEASE.manifest. Those files ship in the release tarball. They are not in
+the git clone.
+
+If that path was meant to be a release directory, it does not contain
+RELEASE.manifest. From the repository root, the way to fetch the signed
+package is:
+
+    ./quickstart.sh
+
+That downloads the signed release, checks its SHA-256, and runs the demo and
+these gates. The release directory is:
+
+    cageos-lite-release/cageos-lite-0.1.1
+EOF
+  exit 1
+fi
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
 

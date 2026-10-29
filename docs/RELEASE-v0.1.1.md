@@ -102,6 +102,27 @@ VERIFY RESULT: 10 passed, 0 failed
 also needs `gpg`, which that host's validation did not exercise. Treat
 v0.1.1 as verified on the build machine only until that is done.
 
+## Known wording defect in the signed driver
+
+`run_demo.py` in the signed v0.1.1 tarball ends with this paragraph:
+
+> this demo cannot yet independently witness an AUTHORIZED write, because its
+> bounded capability disposes of the artifact by design.
+
+That sentence describes the disposable scratch scenarios, whose cleanup guard
+removes the artifact on purpose. The same run's section H observes an
+authorized persistent write on the host running the verifier: the target file
+exists, the challenge is in its content, and the digest matches. A refused
+persistent target is byte-for-byte unchanged. The gap that remains is the one
+stated in the "where the witness sits" section of LIMITS.md in this
+repository: no independently operated witness on a separate machine.
+
+The signed tarball is untouched: its `run_demo.py` still prints the old
+paragraph, and its `LIMITS.md` does not yet have the "where the witness sits"
+section. The copies in git do. Shipping those copies means a new manifest
+hash and a new signature, which is the next signed release. This change does
+not re-sign v0.1.1.
+
 ## What release signing establishes, and what it does not
 
 Unchanged from v0.1.0. A valid signature proves Tillar Technologies signed

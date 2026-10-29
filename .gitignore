@@ -2,3 +2,6 @@
 .pyright/
 __pycache__/
 *.pyc
+
+# Extracted by ./quickstart.sh. The signed bytes stay in the GitHub release.
+cageos-lite-release/
